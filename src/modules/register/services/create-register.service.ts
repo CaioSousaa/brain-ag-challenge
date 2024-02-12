@@ -3,7 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { ICreateRegisterDTO } from '../dto/create-register-dto';
+import { CreateRegisterDTO } from '../dto/create-register-dto';
 import prismaClient from 'src/prisma';
 import { checkingTerrain } from 'src/test/utils/functions/checking-terrain';
 import { isValidCPFOrCNPJ } from 'src/test/utils/functions/validation-legalId';
@@ -20,7 +20,7 @@ export class CreateRegisterService {
     plantable_area,
     vegetation_area,
     planted_crops,
-  }: ICreateRegisterDTO) {
+  }: CreateRegisterDTO) {
     try {
       const legalIdAlreadyExist = await prismaClient.farm.findUnique({
         where: {
