@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { CreateRegisterService } from './services/create-register.service';
-import { CreateRegisterController } from './infra/http/create-register.controller';
+import { UpdateRegisterService } from './services/update-register.service';
+import { registerController } from './infra/http/create-register.controller';
 
 @Module({
-  controllers: [CreateRegisterController],
-  providers: [CreateRegisterService],
+  controllers: [registerController],
+  providers: [CreateRegisterService, UpdateRegisterService],
 })
 export class FarmModule {}
