@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
+import { FarmModule } from './modules/register/register.module';
 
 @Module({
-  imports: [],
+  imports: [FarmModule],
   controllers: [],
   providers: [],
 })
