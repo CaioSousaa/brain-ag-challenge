@@ -3,11 +3,13 @@ import { UpdateRegisterDTO } from '../dto/update-register-dto';
 import { isValidCPFOrCNPJ } from 'src/test/utils/functions/validation-legalId';
 import { checkingTerrain } from 'src/test/utils/functions/checking-terrain';
 import {
+  Injectable,
   InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 
+@Injectable()
 export class UpdateRegisterService {
   async execute(
     id: string,
