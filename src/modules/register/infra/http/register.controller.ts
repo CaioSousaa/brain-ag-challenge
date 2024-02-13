@@ -3,6 +3,7 @@ import { CreateRegisterDTO } from '../../dto/create-register-dto';
 import { UpdateRegisterService } from '../../services/update-register.service';
 import { UpdateRegisterDTO } from '../../dto/update-register-dto';
 import { DeleteRegisterService } from '../../services/delete-register.service';
+import { TotalFarms } from '../../services/endpoints/total-farms.service';
 import {
   Body,
   Controller,
@@ -14,14 +15,16 @@ import {
   Param,
   Patch,
   Delete,
+  Get,
 } from '@nestjs/common';
 
 @Controller('register')
-export class registerController {
+export class RegisterController {
   constructor(
     private readonly registerService: CreateRegisterService,
     private readonly updateService: UpdateRegisterService,
     private readonly deleteService: DeleteRegisterService,
+    private readonly totalFarms: TotalFarms,
   ) {}
 
   @Post()
@@ -40,5 +43,10 @@ export class registerController {
   @Delete(':id')
   async deleteRegister(@Param('id') id: string) {
     return this.deleteService.execute(id);
+  }
+
+  @Get()
+  allFarms() {
+    return this.totalFarms.execute();
   }
 }
