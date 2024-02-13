@@ -6,6 +6,7 @@ import { DeleteRegisterService } from '../../services/delete-register.service';
 import { TotalFarms } from '../../services/endpoints/total-farms.service';
 import { FullAreaHectaresService } from '../../services/endpoints/full-area-hectares.service';
 import { StatesCountService } from '../../services/endpoints/states-count.service';
+import { CropsPlantedService } from '../../services/endpoints/crops-planted.service';
 import {
   Body,
   Controller,
@@ -29,6 +30,7 @@ export class RegisterController {
     private readonly totalFarms: TotalFarms,
     private readonly fullAreaHectaresService: FullAreaHectaresService,
     private readonly statesCountService: StatesCountService,
+    private readonly cropsPlantedService: CropsPlantedService,
   ) {}
 
   @Post()
@@ -62,5 +64,10 @@ export class RegisterController {
   @Get('count-states')
   allStates() {
     return this.statesCountService.execute();
+  }
+
+  @Get('crops')
+  allCrops() {
+    return this.cropsPlantedService.execute();
   }
 }
