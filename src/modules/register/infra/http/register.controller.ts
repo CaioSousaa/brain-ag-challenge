@@ -3,6 +3,7 @@ import { CreateRegisterDTO } from '../../dto/create-register-dto';
 import { UpdateRegisterService } from '../../services/update-register.service';
 import { UpdateRegisterDTO } from '../../dto/update-register-dto';
 import { DeleteRegisterService } from '../../services/delete-register.service';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 
 import {
   Body,
@@ -16,7 +17,7 @@ import {
   Patch,
   Delete,
 } from '@nestjs/common';
-
+@ApiTags('register')
 @Controller('register')
 export class RegisterController {
   constructor(
@@ -28,12 +29,16 @@ export class RegisterController {
   @Post()
   @UsePipes(ValidationPipe)
   @UseInterceptors(ClassSerializerInterceptor)
+  @ApiBody({ type: CreateRegisterDTO })
+  @ApiBearerAuth()
   public async create(@Body() registerDto: CreateRegisterDTO) {
     return this.registerService.execute(registerDto);
   }
 
   @Patch(':id')
   @UsePipes(ValidationPipe)
+  @ApiBody({ type: UpdateRegisterService })
+  @ApiBearerAuth()
   public async update(
     @Param('id') id: string,
     @Body() updateDto: UpdateRegisterDTO,
@@ -42,6 +47,7 @@ export class RegisterController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   public async deleteRegister(@Param('id') id: string) {
     return this.deleteService.execute(id);
   }
