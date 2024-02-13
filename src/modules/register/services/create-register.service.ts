@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import { CreateRegisterDTO } from '../dto/create-register-dto';
 import prismaClient from 'src/prisma';
-import { checkingTerrain } from 'src/test/utils/functions/checking-terrain';
-import { isValidCPFOrCNPJ } from 'src/test/utils/functions/validation-legalId';
+import { checkingTerrain } from 'src/utils/functions/checking-terrain';
+import { isValidCPFOrCNPJ } from 'src/utils/functions/validation-legalId';
 
 @Injectable()
 export class CreateRegisterService {

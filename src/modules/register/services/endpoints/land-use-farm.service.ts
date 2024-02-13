@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { checkingPercentage } from 'src/test/utils/functions/farm-area-use';
+import { checkingPercentage } from 'src/utils/functions/farm-area-use';
 import prismaClient from 'src/prisma';
 
 @Injectable()
