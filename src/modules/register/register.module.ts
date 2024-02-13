@@ -7,6 +7,7 @@ import { TotalFarms } from './services/endpoints/total-farms.service';
 import { FullAreaHectaresService } from './services/endpoints/full-area-hectares.service';
 import { StatesCountService } from './services/endpoints/states-count.service';
 import { CropsPlantedService } from './services/endpoints/crops-planted.service';
+import { LandUseFarmService } from './services/endpoints/land-use-farm.service';
 
 @Module({
   controllers: [RegisterController],
@@ -18,6 +19,7 @@ import { CropsPlantedService } from './services/endpoints/crops-planted.service'
     FullAreaHectaresService,
     StatesCountService,
     CropsPlantedService,
+    LandUseFarmService,
   ],
 })
 export class FarmModule {}
