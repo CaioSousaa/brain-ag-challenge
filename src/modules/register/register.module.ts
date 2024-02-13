@@ -6,6 +6,7 @@ import { RegisterController } from './infra/http/register.controller';
 import { TotalFarms } from './services/endpoints/total-farms.service';
 import { FullAreaHectaresService } from './services/endpoints/full-area-hectares.service';
 import { StatesCountService } from './services/endpoints/states-count.service';
+import { CropsPlantedService } from './services/endpoints/crops-planted.service';
 
 @Module({
   controllers: [RegisterController],
@@ -16,6 +17,7 @@ import { StatesCountService } from './services/endpoints/states-count.service';
     TotalFarms,
     FullAreaHectaresService,
     StatesCountService,
+    CropsPlantedService,
   ],
 })
 export class FarmModule {}
