@@ -1,6 +1,7 @@
 import prismaClient from 'src/prisma';
-import { InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
+@Injectable()
 export class TotalFarms {
   async execute() {
     try {
