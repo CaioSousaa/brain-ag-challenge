@@ -4,6 +4,7 @@ import { UpdateRegisterService } from './services/update-register.service';
 import { DeleteRegisterService } from './services/delete-register.service';
 import { RegisterController } from './infra/http/register.controller';
 import { TotalFarms } from './services/endpoints/total-farms.service';
+import { FullAreaHectaresService } from './services/endpoints/full-area-hectares.service';
 
 @Module({
   controllers: [RegisterController],
@@ -12,6 +13,7 @@ import { TotalFarms } from './services/endpoints/total-farms.service';
     UpdateRegisterService,
     DeleteRegisterService,
     TotalFarms,
+    FullAreaHectaresService,
   ],
 })
 export class FarmModule {}
