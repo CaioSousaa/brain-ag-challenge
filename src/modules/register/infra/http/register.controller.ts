@@ -38,43 +38,46 @@ export class RegisterController {
   @Post()
   @UsePipes(ValidationPipe)
   @UseInterceptors(ClassSerializerInterceptor)
-  create(@Body() registerDto: CreateRegisterDTO) {
+  public async create(@Body() registerDto: CreateRegisterDTO) {
     return this.registerService.execute(registerDto);
   }
 
   @Patch(':id')
   @UsePipes(ValidationPipe)
-  update(@Param('id') id: string, @Body() updateDto: UpdateRegisterDTO) {
+  public async update(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateRegisterDTO,
+  ) {
     return this.updateService.execute(id, updateDto);
   }
 
   @Delete(':id')
-  async deleteRegister(@Param('id') id: string) {
+  public async deleteRegister(@Param('id') id: string) {
     return this.deleteService.execute(id);
   }
 
   @Get('total')
-  allFarms() {
+  public async allFarms() {
     return this.totalFarms.execute();
   }
 
   @Get('full-area')
-  fullArea() {
+  public async fullArea() {
     return this.fullAreaHectaresService.execute();
   }
 
   @Get('count-states')
-  allStates() {
+  public async allStates() {
     return this.statesCountService.execute();
   }
 
   @Get('crops')
-  allCrops() {
+  public async allCrops() {
     return this.cropsPlantedService.execute();
   }
 
   @Get('land-use')
-  usage() {
+  public async usage() {
     return this.landUseFarmService.execute();
   }
 }
