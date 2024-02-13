@@ -4,6 +4,7 @@ import { UpdateRegisterService } from '../../services/update-register.service';
 import { UpdateRegisterDTO } from '../../dto/update-register-dto';
 import { DeleteRegisterService } from '../../services/delete-register.service';
 import { TotalFarms } from '../../services/endpoints/total-farms.service';
+import { FullAreaHectaresService } from '../../services/endpoints/full-area-hectares.service';
 import {
   Body,
   Controller,
@@ -25,6 +26,7 @@ export class RegisterController {
     private readonly updateService: UpdateRegisterService,
     private readonly deleteService: DeleteRegisterService,
     private readonly totalFarms: TotalFarms,
+    private readonly fullAreaHectaresService: FullAreaHectaresService,
   ) {}
 
   @Post()
@@ -45,8 +47,13 @@ export class RegisterController {
     return this.deleteService.execute(id);
   }
 
-  @Get()
+  @Get('total')
   allFarms() {
     return this.totalFarms.execute();
+  }
+
+  @Get('full-area')
+  fullArea() {
+    return this.fullAreaHectaresService.execute();
   }
 }
