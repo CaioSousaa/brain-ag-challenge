@@ -7,6 +7,7 @@ import { CreateRegisterDTO } from '../dto/create-register-dto';
 import prismaClient from 'src/prisma';
 import { checkingTerrain } from 'src/utils/functions/checking-terrain';
 import { isValidCPFOrCNPJ } from 'src/utils/functions/validation-legalId';
+import { Farm } from '@prisma/client';
 
 @Injectable()
 export class CreateRegisterService {
@@ -20,7 +21,7 @@ export class CreateRegisterService {
     plantable_area,
     vegetation_area,
     planted_crops,
-  }: CreateRegisterDTO) {
+  }: CreateRegisterDTO): Promise<Farm> {
     try {
       const legalIdAlreadyExist = await prismaClient.farm.findUnique({
         where: {

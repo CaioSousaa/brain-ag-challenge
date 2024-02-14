@@ -8,6 +8,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Farm } from '@prisma/client';
 
 @Injectable()
 export class UpdateRegisterService {
@@ -22,7 +23,7 @@ export class UpdateRegisterService {
       plantable_area,
       planted_crops,
     }: UpdateRegisterDTO,
-  ) {
+  ): Promise<Farm> {
     try {
       const farm = await prismaClient.farm.findUnique({
         where: {

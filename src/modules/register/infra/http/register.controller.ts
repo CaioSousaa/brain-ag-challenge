@@ -17,6 +17,7 @@ import {
   Patch,
   Delete,
 } from '@nestjs/common';
+import { Farm } from '@prisma/client';
 @ApiTags('register')
 @Controller('register')
 export class RegisterController {
@@ -31,7 +32,7 @@ export class RegisterController {
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiBody({ type: CreateRegisterDTO })
   @ApiBearerAuth()
-  public async create(@Body() registerDto: CreateRegisterDTO) {
+  public async create(@Body() registerDto: CreateRegisterDTO): Promise<Farm> {
     return this.registerService.execute(registerDto);
   }
 
@@ -42,7 +43,7 @@ export class RegisterController {
   public async update(
     @Param('id') id: string,
     @Body() updateDto: UpdateRegisterDTO,
-  ) {
+  ): Promise<Farm> {
     return this.updateService.execute(id, updateDto);
   }
 
