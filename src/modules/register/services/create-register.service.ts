@@ -30,19 +30,18 @@ export class CreateRegisterService {
       });
 
       if (legalIdAlreadyExist) {
-        throw new ConflictException('the CPF or CNPJ is already registered');
-      }
-
-      if (!checkingTerrain(ttl_hectares, plantable_area, vegetation_area)) {
-        throw new Error(
-          'the size of the sum of the plantable and vegetation areas' +
-            'exceeded the total size of the farm. try again please',
-        );
+        throw new ConflictException('The CPF or CNPJ is already registered');
       }
 
       if (!isValidCPFOrCNPJ(legalId)) {
-        throw new Error(
-          'invalid CPF or CNPJ format. follow the standard XXX.XXX.XXX-XX for CPF and XX.XXX.XXX/XXXX-XX',
+        throw new ConflictException(
+          'Invalid CPF or CNPJ format. Follow the standard XXX.XXX.XXX-XX for CPF and XX.XXX.XXX/XXXX-XX',
+        );
+      }
+
+      if (!checkingTerrain(ttl_hectares, plantable_area, vegetation_area)) {
+        throw new ConflictException(
+          'The size of the sum of the plantable and vegetation areas exceeded the total size of the farm. Try again please',
         );
       }
 
@@ -62,9 +61,8 @@ export class CreateRegisterService {
 
       return farm;
     } catch (error) {
-      if (error) throw error;
       throw new InternalServerErrorException(
-        'Error intern in server, please try again',
+        'Internal server error occurred. Please try again.',
       );
     }
   }

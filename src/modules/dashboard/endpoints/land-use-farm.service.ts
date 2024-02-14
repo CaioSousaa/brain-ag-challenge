@@ -1,12 +1,16 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { checkingPercentage } from 'src/utils/functions/farm-area-use';
 import prismaClient from 'src/prisma';
+import { LandUseData } from 'src/utils/interfaces/land-use-date';
 
 @Injectable()
 export class LandUseFarmService {
-  async execute() {
+  async execute(): Promise<LandUseData> {
     try {
-      const data = {};
+      const data: LandUseData = {
+        usePlantable: '0.00',
+        useVegetation: '0.00',
+      };
 
       const fullArea = await prismaClient.farm.aggregate({
         _sum: {
