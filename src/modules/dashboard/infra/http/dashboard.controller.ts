@@ -27,6 +27,11 @@ export class DashboardController {
     status: 400,
     description: 'unable to return data',
   })
+  @ApiOkResponse({ status: 200, description: 'data returned' })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'unable to return data',
+  })
   @Get('total')
   @ApiBearerAuth()
   public async allFarms() {
