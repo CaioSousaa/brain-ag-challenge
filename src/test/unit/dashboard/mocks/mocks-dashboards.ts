@@ -20,6 +20,7 @@ const prismaMock = {
     findMany: jest.fn().mockResolvedValue(farmsWithCrops),
     findFirst: jest.fn().mockResolvedValue(farmsWithCrops[0]),
     findUnique: jest.fn().mockResolvedValue(farmsWithCrops[0]),
+    groupBy: jest.fn().mockResolvedValue(farmsWithCrops[0]),
   },
 };
 

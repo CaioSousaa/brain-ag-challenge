@@ -1,41 +1,28 @@
 import { StatesCountService } from 'src/modules/dashboard/endpoints/states-count.service';
-
-const mockPrismaClient = {
-  farm: {
-    groupBy: jest.fn(),
-  },
-};
-
-jest.mock('src/prisma', () => ({
-  prismaClient: mockPrismaClient,
-}));
+import { prismaMock } from './mocks/mocks-dashboards';
 
 describe('StatesCountService', () => {
-  let statesCountService: StatesCountService;
+  let service: StatesCountService;
 
   beforeEach(() => {
-    statesCountService = new StatesCountService();
+    service = new StatesCountService(prismaMock as any);
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('should return count of farms by state', async () => {
-    const mockStatesCount = [
-      { state: 'State1', _count: { state: 10 } },
-      { state: 'State2', _count: { state: 20 } },
-    ];
-    mockPrismaClient.farm.groupBy.mockResolvedValueOnce(mockStatesCount);
-
-    const expectedResults = [
-      { state: 'State1', count: 10 },
-      { state: 'State2', count: 20 },
+  it('should return the count of farms grouped by state correctly', async () => {
+    const mockCountStates = [
+      { state: 'Rio de Janeiro', _count: 2 },
+      { state: 'Ceara', _count: 1 },
     ];
 
-    const result = await statesCountService.execute();
+    const expectedCountStates = mockCountStates.map((item) => ({
+      state: item.state,
+      count: item._count,
+    }));
 
-    expect(result).toEqual(expectedResults);
-    expect(mockPrismaClient.farm.groupBy).toHaveBeenCalledTimes(1);
+    prismaMock.farm.groupBy.mockResolvedValue(mockCountStates);
+
+    const result = await service.execute();
+
+    expect(result).toEqual(expectedCountStates);
   });
 });
