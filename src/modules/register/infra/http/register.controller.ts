@@ -3,7 +3,13 @@ import { CreateRegisterDTO } from '../../dto/create-register-dto';
 import { UpdateRegisterService } from '../../services/update-register.service';
 import { UpdateRegisterDTO } from '../../dto/update-register-dto';
 import { DeleteRegisterService } from '../../services/delete-register.service';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiTags,
+  ApiOkResponse,
+  ApiBadRequestResponse,
+} from '@nestjs/swagger';
 
 import {
   Body,
@@ -27,6 +33,11 @@ export class RegisterController {
     private readonly deleteService: DeleteRegisterService,
   ) {}
 
+  @ApiOkResponse({ status: 201, description: 'The register has been created' })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'The register has not created',
+  })
   @Post()
   @UsePipes(ValidationPipe)
   @UseInterceptors(ClassSerializerInterceptor)
@@ -36,6 +47,11 @@ export class RegisterController {
     return this.registerService.execute(registerDto);
   }
 
+  @ApiOkResponse({ status: 200, description: 'record changed successfully' })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'unable to change registry',
+  })
   @Patch(':id')
   @UsePipes(ValidationPipe)
   @ApiBody({ type: UpdateRegisterService })
@@ -47,6 +63,11 @@ export class RegisterController {
     return this.updateService.execute(id, updateDto);
   }
 
+  @ApiOkResponse({ status: 200, description: 'record deleted successfully' })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'unable to delete registry',
+  })
   @Delete(':id')
   @ApiBearerAuth()
   public async deleteRegister(@Param('id') id: string) {
