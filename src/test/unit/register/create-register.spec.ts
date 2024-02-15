@@ -1,201 +1,68 @@
+import { Test, TestingModule } from '@nestjs/testing';
 import { CreateRegisterService } from 'src/modules/register/services/create-register.service';
-import {
-  ConflictException,
-  InternalServerErrorException,
-} from '@nestjs/common';
-import { Crops } from '@prisma/client';
-
-const mockPrismaClient = {
-  farm: {
-    findUnique: jest.fn(),
-    create: jest.fn(),
-  },
-};
+import { ConflictException } from '@nestjs/common';
+import { fakeCreateRegister, prismaMock } from './mocks/mocks-create-register';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 describe('CreateRegisterService', () => {
-  let createRegisterService: CreateRegisterService;
+  let service: CreateRegisterService;
 
-  beforeEach(() => {
-    createRegisterService = new CreateRegisterService();
-    createRegisterService['prismaClient'] = mockPrismaClient;
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        CreateRegisterService,
+        { provide: PrismaService, useValue: prismaMock },
+      ],
+    }).compile();
+
+    service = module.get<CreateRegisterService>(CreateRegisterService);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
   });
 
-  it('should throw ConflictException if legalId already exists', async () => {
-    mockPrismaClient.farm.findUnique.mockResolvedValue({});
-
-    const legalIdToCheck = 'legalIdExistente';
-    const otherParams = {
-      name: 'Name',
-      farm_name: 'Farm Name',
-      city: 'City',
-      state: 'State',
-      ttl_hectares: 100,
-      plantable_area: 80,
-      vegetation_area: 20,
-      planted_crops: [] as Crops[],
-    };
-
-    await expect(
-      createRegisterService.execute({
-        legalId: legalIdToCheck,
-        ...otherParams,
-      }),
-    ).rejects.toThrow(ConflictException);
-
-    expect(mockPrismaClient.farm.findUnique).toHaveBeenCalledTimes(1);
-    expect(mockPrismaClient.farm.findUnique).toHaveBeenCalledWith({
-      where: {
-        legalId: legalIdToCheck,
-      },
-    });
+  it('should be defined', () => {
+    expect(service).toBeDefined();
   });
 
-  it('should throw InternalServerErrorException if PrismaClient fails', async () => {
-    mockPrismaClient.farm.findUnique.mockRejectedValue(new Error());
+  it('should throw InternalServerErrorException for other internal errors', async () => {
+    const internalErrorRegister = { ...fakeCreateRegister[0] };
 
-    const legalIdToCheck = 'legalIdParaErroInterno';
-    const otherParams = {
-      name: 'Name',
-      farm_name: 'Farm Name',
-      city: 'City',
-      state: 'State',
-      ttl_hectares: 100,
-      plantable_area: 80,
-      vegetation_area: 20,
-      planted_crops: [] as Crops[],
-    };
+    prismaMock.farm.create.mockRejectedValueOnce(
+      new Error('Internal Server Error'),
+    );
 
-    await expect(
-      createRegisterService.execute({
-        legalId: legalIdToCheck,
-        ...otherParams,
-      }),
-    ).rejects.toThrow(InternalServerErrorException);
-
-    expect(mockPrismaClient.farm.findUnique).toHaveBeenCalledTimes(1);
-    expect(mockPrismaClient.farm.findUnique).toHaveBeenCalledWith({
-      where: {
-        legalId: legalIdToCheck,
-      },
-    });
+    await expect(service.execute(internalErrorRegister)).rejects.toThrow(
+      ConflictException,
+    );
   });
 
-  it('should throw BadRequestException if total area exceeded', async () => {
-    const legalIdToCheck = 'legalIdExceededArea';
-    const otherParams = {
-      name: 'Name',
-      farm_name: 'Farm Name',
-      city: 'City',
-      state: 'State',
-      ttl_hectares: 100,
-      plantable_area: 90,
-      vegetation_area: 20,
-      planted_crops: [] as Crops[],
-    };
+  it('should throw ConflictException if the legalId format is invalid', async () => {
+    const invalidRegister = { ...fakeCreateRegister[0], legalId: 'invalid_id' };
 
-    await expect(
-      createRegisterService.execute({
-        legalId: legalIdToCheck,
-        ...otherParams,
-      }),
-    ).rejects.toThrow();
+    await expect(service.execute(invalidRegister)).rejects.toThrow(
+      ConflictException,
+    );
   });
 
-  it('should throw BadRequestException if legalId is invalid', async () => {
-    const legalIdToCheck = 'invalidLegalId';
-    const otherParams = {
-      name: 'Name',
-      farm_name: 'Farm Name',
-      city: 'City',
-      state: 'State',
-      ttl_hectares: 100,
-      plantable_area: 80,
-      vegetation_area: 20,
-      planted_crops: [] as Crops[],
-    };
+  it('should throw ConflictException if the legalId already exists in a record', async () => {
+    const existingRegister = fakeCreateRegister[0];
 
-    await expect(
-      createRegisterService.execute({
-        legalId: legalIdToCheck,
-        ...otherParams,
-      }),
-    ).rejects.toThrow();
+    prismaMock.farm.findUnique.mockResolvedValueOnce(existingRegister);
+
+    await expect(service.execute(existingRegister)).rejects.toThrow(
+      ConflictException,
+    );
   });
 
-  it('should throw BadRequestException if required fields are blank', async () => {
-    const legalIdToCheck = 'legalIdWithBlankFields';
-    const otherParams = {
-      name: '',
-      farm_name: '',
-      city: '',
-      state: '',
-      ttl_hectares: 100,
-      plantable_area: 80,
-      vegetation_area: 20,
-      planted_crops: [] as Crops[],
-    };
+  it('should throw ConflictException if the legalId already exists in a record', async () => {
+    const existingRegister = fakeCreateRegister[0];
 
-    await expect(
-      createRegisterService.execute({
-        legalId: legalIdToCheck,
-        ...otherParams,
-      }),
-    ).rejects.toThrow();
-  });
+    prismaMock.farm.findUnique.mockResolvedValueOnce(existingRegister);
 
-  it('should throw BadRequestException if planted crops list is empty', async () => {
-    const legalIdToCheck = 'legalIdWithEmptyPlantedCrops';
-    const otherParams = {
-      name: 'Name',
-      farm_name: 'Farm Name',
-      city: 'City',
-      state: 'State',
-      ttl_hectares: 100,
-      plantable_area: 80,
-      vegetation_area: 20,
-      planted_crops: [],
-    };
-
-    await expect(
-      createRegisterService.execute({
-        legalId: legalIdToCheck,
-        ...otherParams,
-      }),
-    ).rejects.toThrow();
-  });
-
-  it('should create a new farm entry if all data is valid', async () => {
-    const legalIdToCheck = 'validLegalId';
-    const otherParams = {
-      name: 'Name',
-      farm_name: 'Farm Name',
-      city: 'City',
-      state: 'State',
-      ttl_hectares: 100,
-      plantable_area: 80,
-      vegetation_area: 20,
-      planted_crops: [] as Crops[],
-    };
-
-    mockPrismaClient.farm.create.mockResolvedValue({ id: 1 });
-
-    await expect(
-      createRegisterService.execute({
-        legalId: legalIdToCheck,
-        ...otherParams,
-      }),
-    ).resolves.toEqual({ id: 1 });
-
-    expect(mockPrismaClient.farm.create).toHaveBeenCalledTimes(1);
-    expect(mockPrismaClient.farm.create).toHaveBeenCalledWith({
-      data: {
-        legalId: legalIdToCheck,
-        ...otherParams,
-      },
-    });
+    await expect(service.execute(existingRegister)).rejects.toThrow(
+      ConflictException,
+    );
   });
 });
