@@ -1,30 +1,19 @@
-import { TotalFarms } from 'src/modules/dashboard/endpoints/total-farms.service';
+import { TotalFarms } from '../../../modules/dashboard/endpoints/total-farms.service';
+import prismaClient from 'src/prisma';
 
 describe('TotalFarms', () => {
-  let totalFarmsService: TotalFarms;
+  let service: TotalFarms;
 
   beforeEach(() => {
-    totalFarmsService = new TotalFarms();
+    service = new TotalFarms();
   });
 
-  it('should return total farms count', async () => {
-    const mockFarmsCount = 10;
+  it('should return the total number of farms', async () => {
+    jest.spyOn(prismaClient.farm, 'count').mockResolvedValueOnce(10);
 
-    const mockCountFunction = jest.fn().mockResolvedValueOnce(mockFarmsCount);
-    const mockPrismaClient = {
-      farm: {
-        count: mockCountFunction,
-      },
-    };
+    const totalFarms = await service.execute();
 
-    jest.mock('src/prisma', () => ({
-      prismaClient: mockPrismaClient,
-    }));
-
-    const result = await totalFarmsService.execute();
-
-    expect(result).toEqual(mockFarmsCount);
-
-    expect(mockCountFunction).toHaveBeenCalledTimes(1);
+    expect(totalFarms).toBe(10);
+    expect(prismaClient.farm.count).toHaveBeenCalled();
   });
 });

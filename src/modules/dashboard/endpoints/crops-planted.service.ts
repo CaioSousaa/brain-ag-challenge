@@ -1,11 +1,12 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import prismaClient from 'src/prisma';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class CropsPlantedService {
+  constructor(private readonly prisma: PrismaService) {}
   async execute() {
     try {
-      const farms = await prismaClient.farm.findMany();
+      const farms = await this.prisma.farm.findMany();
 
       const cropCounts: Record<string, number> = {};
 
