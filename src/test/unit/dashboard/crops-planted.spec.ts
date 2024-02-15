@@ -1,49 +1,23 @@
 import { CropsPlantedService } from 'src/modules/dashboard/endpoints/crops-planted.service';
-
-const mockPrismaClient = {
-  farm: {
-    findMany: jest.fn(),
-  },
-};
-
-jest.mock('src/prisma', () => ({
-  prismaClient: mockPrismaClient,
-}));
+import { prismaMock, farmsWithCrops } from './mocks/mocks-dashboards';
 
 describe('CropsPlantedService', () => {
-  let cropsPlantedService: CropsPlantedService;
+  let service: CropsPlantedService;
 
   beforeEach(() => {
-    cropsPlantedService = new CropsPlantedService();
+    service = new CropsPlantedService(prismaMock as any);
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('should return counts of planted crops', async () => {
-    const mockFarms = [
-      {
-        id: 1,
-        planted_crops: ['Corn', 'Corn', 'Wheat', 'Soybean', 'Wheat'],
-      },
-      {
-        id: 2,
-        planted_crops: ['Wheat', 'Soybean', 'Soybean', 'Corn'],
-      },
+  it('should return the count of crops planted correctly', async () => {
+    const expectedCropCounts = [
+      { crop: 'coffee', count: 3 },
+      { crop: 'cotton', count: 3 },
     ];
 
-    mockPrismaClient.farm.findMany.mockResolvedValueOnce(mockFarms);
+    prismaMock.farm.findMany.mockResolvedValue(farmsWithCrops);
 
-    const expectedResults = [
-      { crop: 'Corn', count: 3 },
-      { crop: 'Wheat', count: 4 },
-      { crop: 'Soybean', count: 3 },
-    ];
+    const result = await service.execute();
 
-    const result = await cropsPlantedService.execute();
-
-    expect(result).toEqual(expectedResults);
-    expect(mockPrismaClient.farm.findMany).toHaveBeenCalledTimes(1);
+    expect(result).toEqual(expectedCropCounts);
   });
 });
