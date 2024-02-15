@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateRegisterService } from 'src/modules/register/services/create-register.service';
 import { ConflictException } from '@nestjs/common';
-import { fakeCreateRegister, prismaMock } from './mocks/mocks-create-register';
+import { fakeCreateRegister, prismaMock } from './mocks/mocks-register';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 describe('CreateRegisterService', () => {

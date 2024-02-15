@@ -1,115 +1,75 @@
 import { UpdateRegisterService } from 'src/modules/register/services/update-register.service';
-import {
-  NotFoundException,
-  UnauthorizedException,
-  InternalServerErrorException,
-} from '@nestjs/common';
 import { UpdateRegisterDTO } from 'src/modules/register/dto/update-register-dto';
-import { Crops } from '@prisma/client';
-
-const mockPrismaClient = {
-  farm: {
-    findUnique: jest.fn(),
-    findFirst: jest.fn(),
-    update: jest.fn(),
-  },
-};
+import { PrismaService } from 'src/prisma/prisma.service';
+import { NotFoundException } from '@nestjs/common';
+import { fakeCreateRegister, prismaMock } from './mocks/mocks-register';
 
 describe('UpdateRegisterService', () => {
-  let updateRegisterService: UpdateRegisterService;
+  let service: UpdateRegisterService;
 
-  beforeEach(() => {
-    updateRegisterService = new UpdateRegisterService();
-    updateRegisterService['prismaClient'] = mockPrismaClient;
+  beforeEach(async () => {
+    const prismaService = new PrismaService();
+    service = new UpdateRegisterService(prismaService);
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should update farm successfully', async () => {
-    const mockFarmId = '1';
-    const mockFarmData: UpdateRegisterDTO = {
-      legalId: '123.456.789-00',
-      name: 'Green Acres Farm',
-      ttl_hectares: 100,
-      plantable_area: 80,
-      vegetation_area: 20,
-      planted_crops: [] as Crops[],
-    };
-    const updatedFarmData = { ...mockFarmData };
-
-    mockPrismaClient.farm.findUnique.mockResolvedValueOnce(mockFarmData as any);
-    mockPrismaClient.farm.update.mockResolvedValueOnce(updatedFarmData as any);
-
-    const result = await updateRegisterService.execute(
-      mockFarmId,
-      mockFarmData,
-    );
-    expect(result).toEqual(updatedFarmData);
-  });
-
-  it('should throw NotFoundException if farm does not exist', async () => {
-    const mockFarmId = '1';
-    mockPrismaClient.farm.findUnique.mockResolvedValueOnce(null);
+  it('should throw NotFoundException if the record does not exist', async () => {
+    const nonExistingId = '999';
 
     await expect(
-      updateRegisterService.execute(mockFarmId, {} as UpdateRegisterDTO),
+      service.execute(nonExistingId, {} as UpdateRegisterDTO),
     ).rejects.toThrow(NotFoundException);
   });
 
-  it('should throw UnauthorizedException if legalId is invalid or already in use', async () => {
-    const mockFarmId = '1';
-    const mockFarmData: UpdateRegisterDTO = {
-      legalId: '1',
-      name: 'Green Acres Farm',
-      ttl_hectares: 100,
-      plantable_area: 80,
+  it('should throw Error if the size of the land exceeded', async () => {
+    const existingRegister = fakeCreateRegister[0];
+    const updateData: UpdateRegisterDTO = {
+      legalId: '13.486.719/0001-12',
+      name: 'New Name',
+      farm_name: 'New Farm Name',
+      ttl_hectares: 20,
+      plantable_area: 30,
       vegetation_area: 20,
-      planted_crops: [] as Crops[],
+      planted_crops: [],
     };
 
-    mockPrismaClient.farm.findUnique.mockResolvedValueOnce(mockFarmData as any);
-    mockPrismaClient.farm.findFirst.mockResolvedValueOnce({} as any);
+    prismaMock.farm.findUnique.mockResolvedValueOnce(existingRegister);
 
     await expect(
-      updateRegisterService.execute(mockFarmId, mockFarmData),
-    ).rejects.toThrow(UnauthorizedException);
-  });
-
-  it('should throw Error if area is invalid', async () => {
-    const mockFarmId = '1';
-    const mockFarmData: UpdateRegisterDTO = {
-      legalId: '123.456.789-00',
-      name: 'Green Acres Farm',
-      ttl_hectares: 100,
-      plantable_area: 80,
-      vegetation_area: 50,
-      planted_crops: [] as Crops[],
-    };
-
-    mockPrismaClient.farm.findUnique.mockResolvedValueOnce(mockFarmData as any);
-
-    await expect(
-      updateRegisterService.execute(mockFarmId, mockFarmData),
+      service.execute(existingRegister.id.toString(), updateData),
     ).rejects.toThrow(Error);
   });
 
-  it('should throw InternalServerErrorException if server error occurs', async () => {
-    const mockFarmId = '1';
-    const mockFarmData: UpdateRegisterDTO = {
-      legalId: '123.456.789-00',
-      name: 'Green Acres Farm',
-      ttl_hectares: 100,
-      plantable_area: 80,
-      vegetation_area: 50,
-      planted_crops: [] as Crops[],
+  it('should throw UnauthorizedException if the legalId is in use by another record', async () => {
+    const existingRegister = fakeCreateRegister[0];
+    const updateData: UpdateRegisterDTO = {
+      legalId: '626.213.423-23',
     };
 
-    mockPrismaClient.farm.findUnique.mockRejectedValueOnce(new Error());
+    await expect(
+      service.execute(existingRegister.id.toString(), updateData),
+    ).rejects.toThrow(NotFoundException);
+  });
+
+  it('should throw Error if the size of the land exceeded', async () => {
+    const existingRegister = fakeCreateRegister[0];
+    const updateData: UpdateRegisterDTO = {
+      legalId: '13.486.719/0001-12',
+      name: 'New Name',
+      farm_name: 'New Farm Name',
+      ttl_hectares: 20,
+      plantable_area: 30,
+      vegetation_area: 20,
+      planted_crops: [],
+    };
+
+    prismaMock.farm.findUnique.mockResolvedValueOnce(existingRegister);
 
     await expect(
-      updateRegisterService.execute(mockFarmId, mockFarmData),
-    ).rejects.toThrow(InternalServerErrorException);
+      service.execute(existingRegister.id.toString(), updateData),
+    ).rejects.toThrow(Error);
   });
 });

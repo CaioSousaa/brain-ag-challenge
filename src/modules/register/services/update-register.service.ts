@@ -1,4 +1,4 @@
-import prismaClient from 'src/prisma';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateRegisterDTO } from '../dto/update-register-dto';
 import { isValidCPFOrCNPJ } from 'src/utils/functions/validation-legalId';
 import { checkingTerrain } from 'src/utils/functions/checking-terrain';
@@ -12,6 +12,7 @@ import { Farm } from '@prisma/client';
 
 @Injectable()
 export class UpdateRegisterService {
+  constructor(private readonly prisma: PrismaService) {}
   async execute(
     id: string,
     {
@@ -25,7 +26,7 @@ export class UpdateRegisterService {
     }: UpdateRegisterDTO,
   ): Promise<Farm> {
     try {
-      const farm = await prismaClient.farm.findUnique({
+      const farm = await this.prisma.farm.findUnique({
         where: {
           id: parseInt(id),
         },
@@ -44,7 +45,7 @@ export class UpdateRegisterService {
           );
         }
 
-        const registerUseByLegalId = await prismaClient.farm.findFirst({
+        const registerUseByLegalId = await this.prisma.farm.findFirst({
           where: {
             legalId: legalId,
           },
@@ -64,7 +65,7 @@ export class UpdateRegisterService {
         );
       }
 
-      const updateRegister = await prismaClient.farm.update({
+      const updateRegister = await this.prisma.farm.update({
         where: {
           id: farm.id,
         },
