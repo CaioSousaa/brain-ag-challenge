@@ -1,75 +1,57 @@
 import { DeleteRegisterService } from 'src/modules/register/services/delete-register.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import {
   NotFoundException,
   InternalServerErrorException,
 } from '@nestjs/common';
-
-const mockPrismaClient = {
-  farm: {
-    findUnique: jest.fn(),
-    delete: jest.fn(),
-  },
-};
+import { fakeCreateRegister } from './mocks/mocks-register';
 
 describe('DeleteRegisterService', () => {
-  let deleteRegisterService: DeleteRegisterService;
+  let service: DeleteRegisterService;
+  let prismaService: PrismaService;
 
-  beforeEach(() => {
-    deleteRegisterService = new DeleteRegisterService();
-    deleteRegisterService['prismaClient'] = mockPrismaClient;
+  beforeEach(async () => {
+    prismaService = new PrismaService();
+    service = new DeleteRegisterService(prismaService);
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
+  it('should delete the register if it exists', async () => {
+    const existingRegister = fakeCreateRegister[0];
+
+    jest
+      .spyOn(prismaService.farm, 'findUnique')
+      .mockResolvedValue(existingRegister);
+    jest
+      .spyOn(prismaService.farm, 'delete')
+      .mockResolvedValue(existingRegister);
+
+    await expect(
+      service.execute(existingRegister.id.toString()),
+    ).resolves.toBeUndefined();
   });
 
-  it('should delete farm successfully', async () => {
-    const mockFarmId = '1';
-    const mockFarmData = {
-      legalId: '123.456.789-00',
-      name: 'Green Acres Farm',
-      ttl_hectares: 100,
-      plantable_area: 80,
-      vegetation_area: 20,
-      planted_crops: [],
-    };
+  it('should throw NotFoundException if the register does not exist', async () => {
+    const nonExistingId = '1000';
 
-    mockPrismaClient.farm.findUnique.mockResolvedValueOnce(mockFarmData as any);
+    jest.spyOn(prismaService.farm, 'findUnique').mockResolvedValue(null);
 
-    await deleteRegisterService.execute(mockFarmId);
-
-    expect(mockPrismaClient.farm.delete).toHaveBeenCalledTimes(1);
-    expect(mockPrismaClient.farm.delete).toHaveBeenCalledWith({
-      where: { id: mockFarmData.legalId },
-    });
-  });
-
-  it('should throw NotFoundException if farm does not exist', async () => {
-    const mockFarmId = '1';
-
-    mockPrismaClient.farm.findUnique.mockResolvedValueOnce(null);
-
-    await expect(deleteRegisterService.execute(mockFarmId)).rejects.toThrow(
+    await expect(service.execute(nonExistingId)).rejects.toThrow(
       NotFoundException,
     );
   });
 
-  it('should throw InternalServerErrorException if server error occurs', async () => {
-    const mockFarmId = '1';
-    const mockFarmData = {
-      legalId: '123.456.789-00',
-      name: 'Green Acres Farm',
-      ttl_hectares: 100,
-      plantable_area: 80,
-      vegetation_area: 20,
-      planted_crops: [],
-    };
+  it('should throw InternalServerErrorException if an internal error occurs', async () => {
+    const existingRegister = fakeCreateRegister[0];
 
-    mockPrismaClient.farm.findUnique.mockResolvedValueOnce(mockFarmData as any);
-    mockPrismaClient.farm.delete.mockRejectedValueOnce(new Error());
+    jest
+      .spyOn(prismaService.farm, 'findUnique')
+      .mockResolvedValue(existingRegister);
+    jest
+      .spyOn(prismaService.farm, 'delete')
+      .mockRejectedValue(new InternalServerErrorException());
 
-    await expect(deleteRegisterService.execute(mockFarmId)).rejects.toThrow(
-      InternalServerErrorException,
-    );
+    await expect(
+      service.execute(existingRegister.id.toString()),
+    ).rejects.toThrow(InternalServerErrorException);
   });
 });

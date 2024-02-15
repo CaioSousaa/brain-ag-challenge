@@ -3,13 +3,15 @@ import {
   NotFoundException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import prismaClient from 'src/prisma';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class DeleteRegisterService {
+  constructor(private readonly prisma: PrismaService) {}
+
   async execute(id: string) {
     try {
-      const farmExist = await prismaClient.farm.findUnique({
+      const farmExist = await this.prisma.farm.findUnique({
         where: {
           id: parseInt(id),
         },
@@ -21,7 +23,7 @@ export class DeleteRegisterService {
         );
       }
 
-      await prismaClient.farm.delete({
+      await this.prisma.farm.delete({
         where: {
           id: farmExist.id,
         },
