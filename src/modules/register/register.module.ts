@@ -9,6 +9,7 @@ import { FullAreaHectaresService } from '../dashboard/endpoints/full-area-hectar
 import { StatesCountService } from '../dashboard/endpoints/states-count.service';
 import { CropsPlantedService } from '../dashboard/endpoints/crops-planted.service';
 import { LandUseFarmService } from '../dashboard/endpoints/land-use-farm.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Module({
   controllers: [RegisterController, DashboardController],
@@ -21,6 +22,7 @@ import { LandUseFarmService } from '../dashboard/endpoints/land-use-farm.service
     StatesCountService,
     CropsPlantedService,
     LandUseFarmService,
+    PrismaService,
   ],
 })
 export class FarmModule {}
