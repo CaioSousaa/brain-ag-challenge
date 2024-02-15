@@ -1,4 +1,4 @@
-import { CropsPlantedService } from 'src/modules/dashboard/endpoints/crops-planted.service';
+import { CropsPlantedService } from 'src/modules/dashboard/services/crops-planted.service';
 import { prismaMock, farmsWithCrops } from './mocks/mocks-dashboards';
 
 describe('CropsPlantedService', () => {

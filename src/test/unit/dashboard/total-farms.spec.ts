@@ -1,4 +1,4 @@
-import { TotalFarms } from '../../../modules/dashboard/endpoints/total-farms.service';
+import { TotalFarms } from '../../../modules/dashboard/services/total-farms.service';
 import prismaClient from 'src/prisma';
 
 describe('TotalFarms', () => {

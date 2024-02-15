@@ -1,4 +1,4 @@
-import { StatesCountService } from 'src/modules/dashboard/endpoints/states-count.service';
+import { StatesCountService } from 'src/modules/dashboard/services/states-count.service';
 import { prismaMock } from './mocks/mocks-dashboards';
 
 describe('StatesCountService', () => {

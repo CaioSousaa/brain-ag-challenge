@@ -1,4 +1,4 @@
-import { LandUseFarmService } from 'src/modules/dashboard/endpoints/land-use-farm.service';
+import { LandUseFarmService } from 'src/modules/dashboard/services/land-use-farm.service';
 
 describe('LandUseFarmService', () => {
   let service: LandUseFarmService;

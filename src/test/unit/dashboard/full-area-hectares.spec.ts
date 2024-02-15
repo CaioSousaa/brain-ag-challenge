@@ -1,4 +1,4 @@
-import { FullAreaHectaresService } from 'src/modules/dashboard/endpoints/full-area-hectares.service';
+import { FullAreaHectaresService } from 'src/modules/dashboard/services/full-area-hectares.service';
 
 describe('FullAreaHectaresService', () => {
   let service: FullAreaHectaresService;

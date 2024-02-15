@@ -1,8 +1,8 @@
-import { TotalFarms } from '../../../dashboard/endpoints/total-farms.service';
-import { FullAreaHectaresService } from '../../../dashboard/endpoints/full-area-hectares.service';
-import { StatesCountService } from '../../../dashboard/endpoints/states-count.service';
-import { CropsPlantedService } from '../../../dashboard/endpoints/crops-planted.service';
-import { LandUseFarmService } from '../../../dashboard/endpoints/land-use-farm.service';
+import { TotalFarms } from '../../../dashboard/services/total-farms.service';
+import { FullAreaHectaresService } from '../../../dashboard/services/full-area-hectares.service';
+import { StatesCountService } from '../../../dashboard/services/states-count.service';
+import { CropsPlantedService } from '../../../dashboard/services/crops-planted.service';
+import { LandUseFarmService } from '../../../dashboard/services/land-use-farm.service';
 import { Get, Controller } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
