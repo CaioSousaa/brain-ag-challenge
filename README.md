@@ -51,7 +51,7 @@ De forma estrutural, esse módulos possuem algumas mudanças na forma como eu as
 
 <pre style="overflow-x: auto; max-width: 1000px; white-space: pre;">
 dashboard
-  - - services                        // Pasta que contém todos os arquivos que irão retornar os dados para os dashboards
+  - - services                         // Pasta que contém todos os arquivos que irão retornar os dados para os dashboards
         - example-dashboard.service.ts // Arquivo Typescript que irá realizar a ação de criar o serviço desejado seguindo as boas práticas e regras de negócio desejadas.
   - - infra                            // Pasta responsável por abrigar a parte de infraestrutura do módulo. Onde contém as definições do traceamento das requisições HTTP assim como a parte de configuração das entidades do módulo
     - - http                           // Pasta que armazena o controller do serviço
